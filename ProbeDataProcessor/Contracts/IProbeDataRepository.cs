@@ -4,6 +4,7 @@ namespace ProbeDataProcessor.Contracts
 {
     public interface IProbeDataRepository
     {
-        Task<List<ProbeData>> GetAllProbeData(int probeId);
+        Task DeleteList(List<ProbeData> probeData);
+        Task<List<ProbeData>> GetAllPastProbeData(int probeId);
     }
 }

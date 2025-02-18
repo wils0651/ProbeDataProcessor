@@ -5,6 +5,7 @@ using ProbeDataProcessor;
 using ProbeDataProcessor.Contracts;
 using ProbeDataProcessor.Jobs;
 using ProbeDataProcessor.Repositories;
+using ProbeDataProcessor.Services;
 
 
 class Program
@@ -24,8 +25,11 @@ class Program
 
         services.AddSingleton<ProcessTemperatureDataJob>();
 
+        services.AddScoped<IProcessTemperatureDataService, ProcessTemperatureDataService>();
+
         services.AddScoped<IProbeDataRepository, ProbeDataRepository>();
         services.AddScoped<IProbeRepository, ProbeRepository>();
+        services.AddScoped<ITemperatureStatisticRepository, TemperatureStatisticRepository>();
 
         services.AddDbContext<DatabaseContext>(options =>
                 options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));

@@ -8,24 +8,29 @@ namespace ProbeDataProcessor.Jobs
 
         public ProcessTemperatureDataJob(IProcessTemperatureDataService processTemperatureDataService)
         {
-            this._processTemperatureDataService = processTemperatureDataService;
+            _processTemperatureDataService = processTemperatureDataService;
         }
 
         public async Task RunAsync()
         {
-            // Get the probe ids
+            var probeIds = await _processTemperatureDataService.GetProbeIds();
 
-            // FOR EACH ID
+            foreach (var probeId in probeIds)
+            {
+                // Get the probe data and group by date
+                var probeDataByDate = await _processTemperatureDataService.GetProbeDataByDate(probeId);
 
-            // Get the probe data
+                // Process and save statistics
+                foreach (var probeData in probeDataByDate)
+                {
+                    var date = probeData.Key;
+                    var temperatureData = probeData.Value;
 
-            // Break into days
+                    await _processTemperatureDataService.ProcessAndSaveStatistics(date, temperatureData);
 
-            // Process statistics
-
-            // Save statistics
-
-            // delete probe data
+                    await _processTemperatureDataService.DeleteProbeData(probeData.Value);
+                }
+            }
         }
     }
 }

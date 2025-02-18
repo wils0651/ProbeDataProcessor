@@ -8,7 +8,7 @@ namespace ProbeDataProcessor.Repositories
     {
         private readonly DatabaseContext _context = context;
 
-        public async Task<List<ProbeData>> GetAllProbeData(int probeId)
+        public async Task<List<ProbeData>> GetAllPastProbeData(int probeId)
         {
             var endDate = DateTime.Now.AddDays(-2).Date;
 
@@ -16,7 +16,14 @@ namespace ProbeDataProcessor.Repositories
                 .Include(pd => pd.Probe)
                 .Where(pd => pd.ProbeId == probeId)
                 .Where(pd => pd.CreatedDate < endDate)
+                .OrderByDescending(pd => pd.CreatedDate)
                 .ToListAsync();
+        }
+
+        public async Task DeleteList(List<ProbeData> probeData)
+        {
+            _context.ProbeData.RemoveRange(probeData);
+            await _context.SaveChangesAsync();
         }
     }
 }
