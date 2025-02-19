@@ -10,7 +10,7 @@ namespace ProbeDataProcessor.Repositories
 
         public async Task<List<ProbeData>> GetAllPastProbeData(int probeId)
         {
-            var twoDaysAgo = DateTime.Now.AddDays(-4).Date;
+            var twoDaysAgo = DateTime.Now.AddDays(-2).Date;
 
             var endDate = DateTime.SpecifyKind(twoDaysAgo, DateTimeKind.Local).ToUniversalTime();
 
