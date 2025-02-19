@@ -19,7 +19,7 @@ namespace ProbeDataProcessor.Services
             _temperatureStatisticRepository = temperatureStatisticRepository;
         }
 
-        public async Task<List<int>> GetProbeIds()
+        public async Task<List<int>> GetProbeIdsAsync()
         {
             var probes = await _probeRepository.ListProbes();
 
@@ -28,7 +28,7 @@ namespace ProbeDataProcessor.Services
                 .ToList();
         }
 
-        public async Task<Dictionary<DateTime, List<ProbeData>>> GetProbeDataByDate(int probeId)
+        public async Task<Dictionary<DateTime, List<ProbeData>>> GetProbeDataByDateAsync(int probeId)
         {
             var probeDataByDate = new Dictionary<DateTime, List<ProbeData>>();
 
@@ -36,7 +36,9 @@ namespace ProbeDataProcessor.Services
 
             while (probeData.Count > 0)
             {
-                var date = probeData.First().CreatedDate.Date;
+                var date = probeData
+                    .OrderBy(pd => pd.CreatedDate)
+                    .First().CreatedDate.Date;
 
                 probeDataByDate[date] = probeData
                     .Where(pd => pd.CreatedDate.Date == date)
@@ -50,14 +52,14 @@ namespace ProbeDataProcessor.Services
             return probeDataByDate;
         }
 
-        public async Task ProcessAndSaveStatistics(DateTime measurementDate, List<ProbeData> probeData)
+        public async Task ProcessAndSaveStatisticsAsync(DateTime measurementDate, List<ProbeData> probeData)
         {
             var temperatureStatistic = CreateTemperatureStatistic(measurementDate, probeData);
 
             await _temperatureStatisticRepository.AddAndSave(temperatureStatistic);
         }
 
-        public async Task DeleteProbeData(List<ProbeData> probeData)
+        public async Task DeleteProbeDataAsync(List<ProbeData> probeData)
         {
             await _probeDataRepository.DeleteList(probeData);
         }
@@ -82,7 +84,7 @@ namespace ProbeDataProcessor.Services
 
             return new TemperatureStatistic
             {
-                MeasurementDate = measurementDate,
+                MeasurementDate = measurementDate.ToUniversalTime(),
                 DataCount = count,
                 Mean = meanTemperature,
                 StandardDeviation = standardDeviation,

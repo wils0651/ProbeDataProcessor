@@ -31,6 +31,8 @@ class Program
         services.AddScoped<IProbeRepository, ProbeRepository>();
         services.AddScoped<ITemperatureStatisticRepository, TemperatureStatisticRepository>();
 
+        var connectionString = configuration.GetConnectionString("DefaultConnection");
+
         services.AddDbContext<DatabaseContext>(options =>
                 options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
 

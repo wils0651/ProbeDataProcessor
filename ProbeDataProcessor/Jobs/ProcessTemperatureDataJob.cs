@@ -13,12 +13,12 @@ namespace ProbeDataProcessor.Jobs
 
         public async Task RunAsync()
         {
-            var probeIds = await _processTemperatureDataService.GetProbeIds();
+            var probeIds = await _processTemperatureDataService.GetProbeIdsAsync();
 
             foreach (var probeId in probeIds)
             {
                 // Get the probe data and group by date
-                var probeDataByDate = await _processTemperatureDataService.GetProbeDataByDate(probeId);
+                var probeDataByDate = await _processTemperatureDataService.GetProbeDataByDateAsync(probeId);
 
                 // Process and save statistics
                 foreach (var probeData in probeDataByDate)
@@ -26,9 +26,9 @@ namespace ProbeDataProcessor.Jobs
                     var date = probeData.Key;
                     var temperatureData = probeData.Value;
 
-                    await _processTemperatureDataService.ProcessAndSaveStatistics(date, temperatureData);
+                    await _processTemperatureDataService.ProcessAndSaveStatisticsAsync(date, temperatureData);
 
-                    await _processTemperatureDataService.DeleteProbeData(probeData.Value);
+                    await _processTemperatureDataService.DeleteProbeDataAsync(probeData.Value);
                 }
             }
         }

@@ -10,13 +10,15 @@ namespace ProbeDataProcessor.Repositories
 
         public async Task<List<ProbeData>> GetAllPastProbeData(int probeId)
         {
-            var endDate = DateTime.Now.AddDays(-2).Date;
+            var twoDaysAgo = DateTime.Now.AddDays(-4).Date;
+
+            var endDate = DateTime.SpecifyKind(twoDaysAgo, DateTimeKind.Local).ToUniversalTime();
 
             return await _context.ProbeData
                 .Include(pd => pd.Probe)
                 .Where(pd => pd.ProbeId == probeId)
                 .Where(pd => pd.CreatedDate < endDate)
-                .OrderByDescending(pd => pd.CreatedDate)
+                .OrderBy(pd => pd.CreatedDate)
                 .ToListAsync();
         }
 
