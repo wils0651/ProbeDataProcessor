@@ -2,7 +2,7 @@
 
 namespace ProbeDataProcessor.Jobs
 {
-    public class ProcessTemperatureDataJob
+    public class ProcessTemperatureDataJob : IJob
     {
         private readonly IProcessTemperatureDataService _processTemperatureDataService;
 

@@ -38,30 +38,21 @@ class Program
 
         var serviceProvider = services.BuildServiceProvider();
 
-        // Chose the job to run based on command line args
-
-        // Get comand line argument
+        // Get Job
         var jobName = args[0];
-
         var jobType = GetJobType(jobName);
+        var job = GetJob(jobType, serviceProvider);
 
         // Run the job
-        switch (jobType)
-        {
-            case JobType.ProcessTemperatureData:
-                {
-                    var processTemperatureDataJob = serviceProvider.GetService<ProcessTemperatureDataJob>();
-
-                    await processTemperatureDataJob.RunAsync();
-                    break;
-                }
-            default:
-                {
-                    throw new InvalidDataException($"Invalid JobType: {jobType}");
-                }
-        }
+        await job.RunAsync();
     }
 
+    /// <summary>
+    /// Get the JobType from the jobName.
+    /// </summary>
+    /// <param name="jobName"></param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentException"></exception>
     private static JobType GetJobType(string jobName)
     {
         return jobName.ToLower() switch
@@ -71,15 +62,22 @@ class Program
         };
     }
 
-    private async Task RunJobAsync(JobType jobType, ServiceProvider serviceProvider)
+    /// <summary>
+    /// Get the job to run.
+    /// </summary>
+    /// <param name="jobType"></param>
+    /// <param name="serviceProvider"></param>
+    /// <returns></returns>
+    /// <exception cref="InvalidDataException"></exception>
+    /// <exception cref="InvalidOperationException"></exception>
+    private static IJob GetJob(JobType jobType, IServiceProvider serviceProvider)
     {
+        IJob job;
         switch (jobType)
         {
             case JobType.ProcessTemperatureData:
                 {
-                    var processTemperatureDataJob = serviceProvider.GetService<ProcessTemperatureDataJob>();
-
-                    await processTemperatureDataJob.RunAsync();
+                    job = serviceProvider.GetService<ProcessTemperatureDataJob>();
                     break;
                 }
             default:
@@ -87,5 +85,12 @@ class Program
                     throw new InvalidDataException($"Invalid JobType: {jobType}");
                 }
         }
+
+        if (job == null)
+        {
+            throw new InvalidOperationException("Job is null");
+        }
+
+        return job;
     }
 }
