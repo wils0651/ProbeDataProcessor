@@ -23,13 +23,19 @@ class Program
 
         var services = new ServiceCollection();
 
+        // Jobs
         services.AddSingleton<ProcessTemperatureDataJob>();
+        services.AddSingleton<DeleteGarageDistanceSensorDataJob>();
 
+        // Services
         services.AddScoped<IProcessTemperatureDataService, ProcessTemperatureDataService>();
+        services.AddScoped<IGarageDistanceDataService, GarageDistanceDataService>();
 
+        // Repositories
         services.AddScoped<IProbeDataRepository, ProbeDataRepository>();
         services.AddScoped<IProbeRepository, ProbeRepository>();
         services.AddScoped<ITemperatureStatisticRepository, TemperatureStatisticRepository>();
+        services.AddScoped<IGarageDistanceSensorDataRepository, GarageDistanceSensorDataRepository>();
 
         var connectionString = configuration.GetConnectionString("DefaultConnection");
 
@@ -58,6 +64,7 @@ class Program
         return jobName.ToLower() switch
         {
             "processtemperaturedata" => JobType.ProcessTemperatureData,
+            "deletegaragedata" => JobType.DeleteGarageData,
             _ => throw new ArgumentException($"Invalid Job Type: {jobName}"),
         };
     }
@@ -78,6 +85,11 @@ class Program
             case JobType.ProcessTemperatureData:
                 {
                     job = serviceProvider.GetService<ProcessTemperatureDataJob>();
+                    break;
+                }
+            case JobType.DeleteGarageData:
+                {
+                    job = serviceProvider.GetService<DeleteGarageDistanceSensorDataJob>();
                     break;
                 }
             default:

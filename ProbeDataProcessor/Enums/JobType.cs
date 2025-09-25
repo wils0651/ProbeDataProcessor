@@ -2,6 +2,7 @@
 {
     internal enum JobType
     {
-        ProcessTemperatureData = 1
+        ProcessTemperatureData = 1,
+        DeleteGarageData = 2,
     }
 }
