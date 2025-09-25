@@ -19,6 +19,10 @@ namespace ProbeDataProcessor.Services
             _temperatureStatisticRepository = temperatureStatisticRepository;
         }
 
+        /// <summary>
+        /// Gets all the probe IDs.
+        /// </summary>
+        /// <returns></returns>
         public async Task<List<int>> GetProbeIdsAsync()
         {
             var probes = await _probeRepository.ListProbes();
@@ -28,6 +32,11 @@ namespace ProbeDataProcessor.Services
                 .ToList();
         }
 
+        /// <summary>
+        /// Groups probe data by date.
+        /// </summary>
+        /// <param name="probeId"></param>
+        /// <returns></returns>
         public async Task<Dictionary<DateTime, List<ProbeData>>> GetProbeDataByDateAsync(int probeId)
         {
             var probeDataByDate = new Dictionary<DateTime, List<ProbeData>>();
@@ -52,6 +61,12 @@ namespace ProbeDataProcessor.Services
             return probeDataByDate;
         }
 
+        /// <summary>
+        /// Process and saves temperature statistics.
+        /// </summary>
+        /// <param name="measurementDate"></param>
+        /// <param name="probeData"></param>
+        /// <returns></returns>
         public async Task ProcessAndSaveStatisticsAsync(DateTime measurementDate, List<ProbeData> probeData)
         {
             var temperatureStatistic = CreateTemperatureStatistic(measurementDate, probeData);
@@ -59,11 +74,23 @@ namespace ProbeDataProcessor.Services
             await _temperatureStatisticRepository.AddAndSave(temperatureStatistic);
         }
 
+        /// <summary>
+        /// Deletes a list of ProbeData.
+        /// </summary>
+        /// <param name="probeData"></param>
+        /// <returns></returns>
         public async Task DeleteProbeDataAsync(List<ProbeData> probeData)
         {
             await _probeDataRepository.DeleteList(probeData);
         }
 
+        /// <summary>
+        /// Creates a TemperatureStatistic containing mean, standard deviation, max, min, and count for a given
+        /// probe on a given day.
+        /// </summary>
+        /// <param name="measurementDate"></param>
+        /// <param name="probeData"></param>
+        /// <returns></returns>
         private static TemperatureStatistic CreateTemperatureStatistic(DateTime measurementDate, List<ProbeData> probeData)
         {
             var count = probeData.Count;
@@ -94,13 +121,19 @@ namespace ProbeDataProcessor.Services
             };
         }
 
-        private static decimal CalculateStandardDeviation(List<ProbeData> probeData, decimal meanTemperature)
+        /// <summary>
+        /// Calculates the standard deviation for a list of probeDatas and a given mean temperature.
+        /// </summary>
+        /// <param name="probeDatas"></param>
+        /// <param name="meanTemperature"></param>
+        /// <returns></returns>
+        private static decimal CalculateStandardDeviation(List<ProbeData> probeDatas, decimal meanTemperature)
         {
-            var sumOfSquares = probeData
+            var sumOfSquares = probeDatas
                 .Select(pd => Math.Pow((double)pd.Temperature - (double)meanTemperature, 2))
                 .Sum();
 
-            return (decimal)Math.Sqrt(sumOfSquares / probeData.Count);
+            return (decimal)Math.Sqrt(sumOfSquares / probeDatas.Count);
         }
     }
 }

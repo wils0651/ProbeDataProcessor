@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "ProbeDataProcessor": {
+      "commandName": "Project",
+      "commandLineArgs": "processtemperaturedata"
+    }
+  }
+}

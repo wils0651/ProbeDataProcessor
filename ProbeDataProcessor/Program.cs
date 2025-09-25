@@ -3,14 +3,14 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using ProbeDataProcessor;
 using ProbeDataProcessor.Contracts;
+using ProbeDataProcessor.Enums;
 using ProbeDataProcessor.Jobs;
 using ProbeDataProcessor.Repositories;
 using ProbeDataProcessor.Services;
 
-
 class Program
 {
-    static async Task Main()
+    static async Task Main(string[] args)
     {
         string environment = Environment.GetEnvironmentVariable("APP_ENV") ?? "Development";
 
@@ -38,8 +38,54 @@ class Program
 
         var serviceProvider = services.BuildServiceProvider();
 
-        var processTemperatureDataJob = serviceProvider.GetService<ProcessTemperatureDataJob>();
+        // Chose the job to run based on command line args
 
-        await processTemperatureDataJob.RunAsync();
+        // Get comand line argument
+        var jobName = args[0];
+
+        var jobType = GetJobType(jobName);
+
+        // Run the job
+        switch (jobType)
+        {
+            case JobType.ProcessTemperatureData:
+                {
+                    var processTemperatureDataJob = serviceProvider.GetService<ProcessTemperatureDataJob>();
+
+                    await processTemperatureDataJob.RunAsync();
+                    break;
+                }
+            default:
+                {
+                    throw new InvalidDataException($"Invalid JobType: {jobType}");
+                }
+        }
+    }
+
+    private static JobType GetJobType(string jobName)
+    {
+        return jobName.ToLower() switch
+        {
+            "processtemperaturedata" => JobType.ProcessTemperatureData,
+            _ => throw new ArgumentException($"Invalid Job Type: {jobName}"),
+        };
+    }
+
+    private async Task RunJobAsync(JobType jobType, ServiceProvider serviceProvider)
+    {
+        switch (jobType)
+        {
+            case JobType.ProcessTemperatureData:
+                {
+                    var processTemperatureDataJob = serviceProvider.GetService<ProcessTemperatureDataJob>();
+
+                    await processTemperatureDataJob.RunAsync();
+                    break;
+                }
+            default:
+                {
+                    throw new InvalidDataException($"Invalid JobType: {jobType}");
+                }
+        }
     }
 }
