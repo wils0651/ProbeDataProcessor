@@ -25,8 +25,8 @@ namespace ProbeDataProcessor.Test
             // Arrange
             var probes = new List<Probe>
             {
-                new Probe { ProbeId = 1, ProbeName = "probe 1" },
-                new Probe { ProbeId = 2, ProbeName = "probe 2" }
+                new() { ProbeId = 1, ProbeName = "probe 1" },
+                new() { ProbeId = 2, ProbeName = "probe 2" }
             };
 
             _probeRepository.ListProbes().Returns(probes);
@@ -48,9 +48,9 @@ namespace ProbeDataProcessor.Test
 
             var probeData = new List<ProbeData>()
             {
-                new ProbeData{ProbeId = probeId, CreatedDate = new DateTime(2025,2,19,12,12,12), Temperature = 70.0m },
-                new ProbeData{ProbeId = probeId, CreatedDate = new DateTime(2025,2,18,12,12,12), Temperature = 70.0m },
-                new ProbeData{ProbeId = probeId, CreatedDate = new DateTime(2025,2,19,12,12,12), Temperature = 60.0m }
+                new() {ProbeId = probeId, CreatedDate = new DateTime(2025,2,19,12,12,12), Temperature = 70.0m },
+                new() {ProbeId = probeId, CreatedDate = new DateTime(2025,2,18,12,12,12), Temperature = 70.0m },
+                new() {ProbeId = probeId, CreatedDate = new DateTime(2025,2,19,12,12,12), Temperature = 60.0m }
             };
 
             _probeDataRepository.GetAllPastProbeData(probeId).Returns(probeData);

@@ -3,7 +3,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using ProbeDataProcessor;
 using ProbeDataProcessor.Contracts;
-using ProbeDataProcessor.Enums;
 using ProbeDataProcessor.Jobs;
 using ProbeDataProcessor.Repositories;
 using ProbeDataProcessor.Services;
@@ -45,28 +44,10 @@ class Program
         var serviceProvider = services.BuildServiceProvider();
 
         // Get Job
-        var jobName = args[0];
-        var jobType = GetJobType(jobName);
-        var job = GetJob(jobType, serviceProvider);
+        var job = GetJob(args, serviceProvider);
 
         // Run the job
         await job.RunAsync();
-    }
-
-    /// <summary>
-    /// Get the JobType from the jobName.
-    /// </summary>
-    /// <param name="jobName"></param>
-    /// <returns></returns>
-    /// <exception cref="ArgumentException"></exception>
-    private static JobType GetJobType(string jobName)
-    {
-        return jobName.ToLower() switch
-        {
-            "processtemperaturedata" => JobType.ProcessTemperatureData,
-            "deletegaragedata" => JobType.DeleteGarageData,
-            _ => throw new ArgumentException($"Invalid Job Type: {jobName}"),
-        };
     }
 
     /// <summary>
@@ -77,24 +58,29 @@ class Program
     /// <returns></returns>
     /// <exception cref="InvalidDataException"></exception>
     /// <exception cref="InvalidOperationException"></exception>
-    private static IJob GetJob(JobType jobType, IServiceProvider serviceProvider)
+    private static IJob GetJob(string[] args, IServiceProvider serviceProvider)
     {
-        IJob job;
-        switch (jobType)
+        var jobName = args == null || string.IsNullOrEmpty(args[0])
+            ? string.Empty
+            : args[0];
+
+        IJob? job;
+        switch (jobName.ToLower())
         {
-            case JobType.ProcessTemperatureData:
+            case "processtemperaturedata":
                 {
                     job = serviceProvider.GetService<ProcessTemperatureDataJob>();
                     break;
                 }
-            case JobType.DeleteGarageData:
+            case "deletegaragedata":
                 {
                     job = serviceProvider.GetService<DeleteGarageDistanceSensorDataJob>();
                     break;
                 }
             default:
                 {
-                    throw new InvalidDataException($"Invalid JobType: {jobType}");
+                    job = serviceProvider.GetService<ProcessTemperatureDataJob>();
+                    break;
                 }
         }
 

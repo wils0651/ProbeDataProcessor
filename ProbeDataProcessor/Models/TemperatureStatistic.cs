@@ -14,7 +14,7 @@ namespace ProbeDataProcessor.Models
         public int ProbeId { get; set; }
 
         [ForeignKey(nameof(ProbeId))]
-        public Probe Probe { get; set; }
+        public Probe? Probe { get; set; }
 
         [Column("datacount")]
         public int DataCount { get; set; }
