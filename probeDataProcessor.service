@@ -1,0 +1,13 @@
+[Unit]
+Description=ProbeDataProcessor - ProcessTemperatureData
+After=network.target
+
+[Service]
+Type=oneshot
+WorkingDirectory=/opt/apps/ProbeDataProcessor
+ExecStart=/usr/bin/dotnet /opt/apps/ProbeDataProcessor/ProbeDataProcessor.dll ProcessTemperatureData
+User=tim
+Environment=APP_ENV=Production
+
+[Install]
+WantedBy=multi-user.target
