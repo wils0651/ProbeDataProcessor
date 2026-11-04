@@ -1,0 +1,10 @@
+[Unit]
+Description=Run the ProbeDataProcessor once a day
+
+[Timer]
+OnCalendar=07:00
+Persistent=true
+Unit=probeDataProcessor.service
+
+[Install]
+WantedBy=multi-user.target

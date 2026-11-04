@@ -1,5 +1,6 @@
+# /etc/systemd/system/probeDataProcessor.service
 [Unit]
-Description=ProbeDataProcessor - ProcessTemperatureData
+Description=Probe Data Processor - Process Temperature Probe Data
 After=network.target
 
 [Service]
@@ -8,6 +9,11 @@ WorkingDirectory=/opt/apps/ProbeDataProcessor
 ExecStart=/usr/bin/dotnet /opt/apps/ProbeDataProcessor/ProbeDataProcessor.dll ProcessTemperatureData
 User=tim
 Environment=APP_ENV=Production
+SyslogIdentifier=probeDataProcessor
+KillSignal=SIGINT
+StandardOutput=inherit
+StandardError=inherit
 
 [Install]
 WantedBy=multi-user.target
+
